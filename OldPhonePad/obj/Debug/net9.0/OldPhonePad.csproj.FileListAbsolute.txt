@@ -12,3 +12,4 @@ C:\Users\Melih\Desktop\C#Challenge\OldPhonePad\obj\Debug\net9.0\refint\OldPhoneP
 C:\Users\Melih\Desktop\C#Challenge\OldPhonePad\obj\Debug\net9.0\OldPhonePad.pdb
 C:\Users\Melih\Desktop\C#Challenge\OldPhonePad\obj\Debug\net9.0\OldPhonePad.genruntimeconfig.cache
 C:\Users\Melih\Desktop\C#Challenge\OldPhonePad\obj\Debug\net9.0\ref\OldPhonePad.dll
+C:\Users\Melih\Desktop\C#Challenge\OldPhonePad\obj\Debug\net9.0\OldPhonePad.sourcelink.json
