@@ -5,37 +5,54 @@ namespace OldPhonePad
 {
     public class OldPhonePad
     {
+        private static readonly string[] KeypadMap = new string[]
+        {
+            "",      // 0
+            "&'(",   // 1
+            "ABC",   // 2
+            "DEF",   // 3
+            "GHI",   // 4
+            "JKL",   // 5
+            "MNO",   // 6
+            "PQRS",  // 7
+            "TUV",   // 8
+            "WXYZ"   // 9
+        };
+
         public static string OldPhone(string input)
         {
-            StringBuilder result = new StringBuilder();
-            char currentButton = '\0';  // Current button being processed
-            int pressCount = 0;         // Number of times the current button has been pressed
+            if (string.IsNullOrEmpty(input))
+                return string.Empty;
+
+            var result = new StringBuilder();
+            var currentButton = '\0';
+            var pressCount = 0;
 
             foreach (char c in input)
             {
                 if (c == '#')
                     break;
-                
-                // TODO: Add backspace (*) functionality
-                
+
+                if (c == '*')
+                {
+                    ProcessCurrentButton(result, currentButton, pressCount);
+                    currentButton = '\0';
+                    pressCount = 0;
+
+                    if (result.Length > 0)
+                        result.Length--;
+                    
+                    continue;
+                }
+
                 if (c == ' ')
                 {
-                    // Process the pressed button
-                    if (currentButton != '\0' && pressCount > 0)
-                    {
-                        int buttonIndex = currentButton - '0';
-                        string letters = GetLettersForButton(buttonIndex);
-                        if (letters.Length > 0)
-                        {
-                            int index = (pressCount - 1) % letters.Length;
-                            result.Append(letters[index]);
-                        }
-                    }
+                    ProcessCurrentButton(result, currentButton, pressCount);
                     currentButton = '\0';
                     pressCount = 0;
                     continue;
                 }
-                
+
                 if (char.IsDigit(c))
                 {
                     if (c == currentButton)
@@ -44,56 +61,35 @@ namespace OldPhonePad
                     }
                     else
                     {
-                        // Process previous button before starting new one
-                        if (currentButton != '\0' && pressCount > 0)
-                        {
-                            int buttonIndex = currentButton - '0';
-                            string letters = GetLettersForButton(buttonIndex);
-                            if (letters.Length > 0)
-                            {
-                                int index = (pressCount - 1) % letters.Length;
-                                result.Append(letters[index]);
-                            }
-                        }
+                        ProcessCurrentButton(result, currentButton, pressCount);
                         currentButton = c;
                         pressCount = 1;
                     }
                 }
             }
-            
-            // Process any remaining button presses
-            if (currentButton != '\0' && pressCount > 0)
-            {
-                int buttonIndex = currentButton - '0';
-                string letters = GetLettersForButton(buttonIndex);
-                if (letters.Length > 0)
-                {
-                    int index = (pressCount - 1) % letters.Length;
-                    result.Append(letters[index]);
-                }
-            }
+
+            ProcessCurrentButton(result, currentButton, pressCount);
 
             return result.ToString();
         }
 
-        private static string GetLettersForButton(int button)
+        private static void ProcessCurrentButton(StringBuilder result, char button, int count)
         {
-            string[] keypad = 
-            { 
-                "", 
-                "&'(", 
-                "ABC", 
-                "DEF", 
-                "GHI", 
-                "JKL", 
-                "MNO", 
-                "PQRS", 
-                "TUV", 
-                "WXYZ" 
-            };
-            if (button >= 0 && button < keypad.Length)
-                return keypad[button];
-            return "";
+            if (button == '\0' || count == 0)
+                return;
+
+            int buttonIndex = button - '0';
+            
+            if (buttonIndex < 0 || buttonIndex >= KeypadMap.Length)
+                return;
+
+            string letters = KeypadMap[buttonIndex];
+            
+            if (string.IsNullOrEmpty(letters))
+                return;
+
+            int letterIndex = (count - 1) % letters.Length;
+            result.Append(letters[letterIndex]);
         }
     }
 }
