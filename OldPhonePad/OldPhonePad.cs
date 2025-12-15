@@ -3,9 +3,13 @@ using System.Text;
 
 namespace OldPhonePad
 {
+    /// <summary>
+    /// Simulates an old phone keypad input.
+    /// </summary>
     public class OldPhonePad
     {
-        private static readonly string[] KeypadMap = new string[]
+        // Maps keypad numbers to their corresponding characters
+        private static readonly string[] KeypadMap =
         {
             "",      // 0
             "&'(",   // 1
@@ -19,14 +23,22 @@ namespace OldPhonePad
             "WXYZ"   // 9
         };
 
+        /// <summary>
+        /// Converts old phone keypad button presses into text.
+        /// </summary>
+        /// <param name="input">
+        /// Sequence of digit presses. Spaces indicate pauses, '*' acts as backspace,
+        /// and '#' ends the input.
+        /// </param>
+        /// <returns>The decoded text message.</returns>
         public static string OldPhone(string input)
         {
             if (string.IsNullOrEmpty(input))
                 return string.Empty;
 
             var result = new StringBuilder();
-            var currentButton = '\0';
-            var pressCount = 0;
+            char currentButton = '\0';
+            int pressCount = 0;
 
             foreach (char c in input)
             {
@@ -41,7 +53,7 @@ namespace OldPhonePad
 
                     if (result.Length > 0)
                         result.Length--;
-                    
+
                     continue;
                 }
 
@@ -53,39 +65,43 @@ namespace OldPhonePad
                     continue;
                 }
 
-                if (char.IsDigit(c))
+                if (!char.IsDigit(c))
+                    continue;
+
+                if (c == currentButton)
                 {
-                    if (c == currentButton)
-                    {
-                        pressCount++;
-                    }
-                    else
-                    {
-                        ProcessCurrentButton(result, currentButton, pressCount);
-                        currentButton = c;
-                        pressCount = 1;
-                    }
+                    pressCount++;
+                }
+                else
+                {
+                    ProcessCurrentButton(result, currentButton, pressCount);
+                    currentButton = c;
+                    pressCount = 1;
                 }
             }
 
+            // Handle any remaining buffered input
             ProcessCurrentButton(result, currentButton, pressCount);
 
             return result.ToString();
         }
 
+        /// <summary>
+        /// Processes the current button press sequence and appends the result.
+        /// </summary>
         private static void ProcessCurrentButton(StringBuilder result, char button, int count)
         {
-            if (button == '\0' || count == 0)
+            if (button == '\0' || count <= 0)
                 return;
 
             int buttonIndex = button - '0';
-            
+
             if (buttonIndex < 0 || buttonIndex >= KeypadMap.Length)
                 return;
 
             string letters = KeypadMap[buttonIndex];
-            
-            if (string.IsNullOrEmpty(letters))
+
+            if (letters.Length == 0)
                 return;
 
             int letterIndex = (count - 1) % letters.Length;
